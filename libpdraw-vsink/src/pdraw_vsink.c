@@ -465,7 +465,12 @@ int pdraw_vsink_start(const char *url,
 		struct timespec max_wait = {0, 0};
 		const int gettime_rv = clock_gettime(CLOCK_REALTIME, &max_wait);
 		max_wait.tv_sec += timeout_seconds;
-		const time_wait = pthread_cond_timedwait(&self->cond, &self->mutex, &max_wait);
+		res = pthread_cond_timedwait(&self->cond, &self->mutex, &max_wait);
+		if(res) {
+			ULOG_ERRNO("mbuf_raw_video_frame_queue_pop timeout", -res);
+			pthread_mutex_unlock(&self->mutex);
+			goto error;
+		}
 	}
 	else{
 		pthread_cond_wait(&self->cond, &self->mutex);
@@ -473,11 +478,6 @@ int pdraw_vsink_start(const char *url,
 
 	res = self->result;
 	pthread_mutex_unlock(&self->mutex);
-
-	if(time_wait) {
-		ULOG_ERRNO("mbuf_raw_video_frame_queue_pop timeout", -res);
-		goto error;
-	}
 
 	if (res < 0) {
 		ULOG_ERRNO("failed to start pdraw vsink", -res);
