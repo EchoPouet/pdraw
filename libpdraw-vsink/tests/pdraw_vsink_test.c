@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	res = pdraw_vsink_start(argv[1], &media_info, &vsink);
+	res = pdraw_vsink_start(argv[1], &media_info, &vsink, 0);
 	if (res < 0 || media_info == NULL) {
 		ULOG_ERRNO("pdraw_vsink_start", -res);
 		exit(EXIT_FAILURE);
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 		unsigned int plane_count;
 
 		/* Get a new frame */
-		res = pdraw_vsink_get_frame(vsink, NULL, &frame_info, &frame);
+		res = pdraw_vsink_get_frame(vsink, NULL, &frame_info, &frame, 0);
 		if (res < 0) {
 			ULOG_ERRNO("pdraw_vsink_get_frame", -res);
 			continue;
